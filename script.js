@@ -54,7 +54,7 @@ async function showTees(id) {
 }
 
 async function selectTee(e) {
-  teeId = e.target.value
+  teeId = parseInt(e.target.value)
   displayTable()
 }
 
@@ -64,13 +64,16 @@ async function displayTable() {
   let holes = (await getCourseInfo(courseId)).holes
   displayHoles(holes)
   displayYards(holes)
-  // displayPar()
-  // displayHandicap()
+  displayPar(holes)
+  displayHandicap(holes)
   // displayPlayers()
 }
 
-async function displayHoles(holes) {
-  //holes = (await getCourseInfo(courseId)).holes
+function createCell(title, index, row) {
+  row.insertCell(index).innerHTML = title;
+}
+
+function displayHoles(holes) {
   var table1 = document.querySelector('#first');
   var table2 = document.querySelector('#second');
 
@@ -92,39 +95,97 @@ async function displayHoles(holes) {
   createCell('total', 10, row2)
 }
 
-async function displayYards(holes) {
+function displayYards(holes) {
   var table1 = document.querySelector('#first');
   var table2 = document.querySelector('#second');
 
   var row1 = table1.insertRow(0);
   var row2 = table2.insertRow(0);
 
+  let table1Total = 0;
+  let table2Total = 0;
+
   var index = 0;
   createCell('Yards', 0, row1)
   createCell('Yards', 0, row2)
   holes.slice(0, 9).forEach((h) => {
-    let t = h.teeBoxes.filter((t) => {
-      return t.teeTypeId === teeId 
-    })
+    let t = h.teeBoxes.find(tee => tee.teeTypeId === teeId )
+    table1Total += t.yards
     createCell(t.yards, index + 1, row1)
     index++
   })
 
   index = 0;
   holes.slice(9, 19).forEach((h) => {
-    let t = h.teeBoxes.filter((t) => {
-      t.teeTypeId === teeId 
-    })
+    let t = h.teeBoxes.find(tee => tee.teeTypeId === teeId )
     createCell(t.yards, index + 1, row2)
+    table2Total += t.yards
+    index++
+  })
+  createCell(table1Total, 10, row1)
+  createCell(table2Total, 10, row2)
+}
+
+function displayPar(holes) {
+  var table1 = document.querySelector('#first');
+  var table2 = document.querySelector('#second');
+
+  var row1 = table1.insertRow(0);
+  var row2 = table2.insertRow(0);
+
+  let table1Total = 0;
+  let table2Total = 0;
+
+  var index = 0;
+  createCell('Par', 0, row1)
+  createCell('Par', 0, row2)
+  holes.slice(0, 9).forEach((h) => {
+    let t = h.teeBoxes.find(tee => tee.teeTypeId === teeId )
+    table1Total += t.par
+    createCell(t.par, index + 1, row1)
+    index++
+  })
+
+  index = 0;
+  holes.slice(9, 19).forEach((h) => {
+    let t = h.teeBoxes.find(tee => tee.teeTypeId === teeId )
+    createCell(t.par, index + 1, row2)
+    table2Total += t.par
+    index++
+  })
+  createCell(table1Total, 10, row1)
+  createCell(table2Total, 10, row2)
+}
+
+function displayHandicap(holes) {
+  var table1 = document.querySelector('#first');
+  var table2 = document.querySelector('#second');
+
+  var row1 = table1.insertRow(0);
+  var row2 = table2.insertRow(0);
+
+  let table1Total = 0;
+  let table2Total = 0;
+
+  var index = 0;
+  createCell('Handicap', 0, row1)
+  createCell('Handicap', 0, row2)
+  holes.slice(0, 9).forEach((h) => {
+    let t = h.teeBoxes.find(tee => tee.teeTypeId === teeId )
+    createCell(t.hcp, index + 1, row1)
+    index++
+  })
+
+  index = 0;
+  holes.slice(9, 19).forEach((h) => {
+    let t = h.teeBoxes.find(tee => tee.teeTypeId === teeId )
+    createCell(t.hcp, index + 1, row2)
     index++
   })
   createCell('', 10, row1)
   createCell('', 10, row2)
 }
 
-function createCell(title, index, row) {
-  row.insertCell(index).innerHTML = title;
-}
 
 
 window.addEventListener('DOMContentLoaded', () => {
