@@ -26,6 +26,10 @@
                         <option selected disabled value>Select Tee</option>
                     </select>
                 </div>
+                <div class="playerInfo">
+                    <input class="hidden" type="text" label="playerName" id="playerName" placeholder="Add Player Name">
+                    <button id="addPlayer">Add</button>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -50,5 +54,20 @@
             </div>
         </div>
     </div>
+    <template id="playerRow">
+        <tr>
+            <td class="player"><input type="text"></td>
+            <td class="hole1"><input type="number"></td>
+            <td class="hole2"><input type="number"></td>
+            <td class="hole3"><input type="number"></td>
+            <td class="hole4"><input type="number"></td>
+            <td class="hole5"><input type="number"></td>
+            <td class="hole6"><input type="number"></td>
+            <td class="hole7"><input type="number"></td>
+            <td class="hole8"><input type="number"></td>
+            <td class="hole9"><input type="number"></td>
+            <td class="totalRowScore"></td>
+        </tr>
+    </template>
 </body>
 </html>

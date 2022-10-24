@@ -1,7 +1,7 @@
 const url = 'https://golf-courses-api.herokuapp.com/courses'
 let courseId = -1
 let teeId = -1
-const rowTemplate = document.querySelector(['#rowTemplate'])
+const rowTemplate = document.querySelector(['#playerRow'])
 
 class Player {
   constructor(name, id = getNextId(), scores = []) {
@@ -62,11 +62,11 @@ async function displayTable() {
   var element = document.querySelector('#scorecard')
   element.classList.remove('display-none')
   let holes = (await getCourseInfo(courseId)).holes
-  displayHoles(holes)
-  displayYards(holes)
-  displayPar(holes)
-  displayHandicap(holes)
   // displayPlayers()
+  displayHandicap(holes)
+  displayPar(holes)
+  displayYards(holes)
+  displayHoles(holes)
 }
 
 function createCell(title, index, row) {
@@ -91,8 +91,8 @@ function displayHoles(holes) {
     createCell(`${index + 10}`, index + 1, row2)
     index++
   })
-  createCell('total', 10, row1)
-  createCell('total', 10, row2)
+  createCell('Total', 10, row1)
+  createCell('Total', 10, row2)
 }
 
 function displayYards(holes) {
@@ -164,9 +164,6 @@ function displayHandicap(holes) {
   var row1 = table1.insertRow(0);
   var row2 = table2.insertRow(0);
 
-  let table1Total = 0;
-  let table2Total = 0;
-
   var index = 0;
   createCell('Handicap', 0, row1)
   createCell('Handicap', 0, row2)
@@ -186,7 +183,20 @@ function displayHandicap(holes) {
   createCell('', 10, row2)
 }
 
+document.querySelector('#addPlayer').addEventListener('click', displayPlayers)
 
+function displayPlayers() {
+  var table1 = document.querySelector('#first');
+  var table2 = document.querySelector('#second');
+
+  var table1RowCount = table1.rows.length;
+  var table2RowCount = table2.rows.length;
+
+  var row1 = table1.insertRow(table1RowCount);
+  var row2 = table2.insertRow(table2RowCount);
+
+  playerRow = document.importNode(rowTemplate.content, true)
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('tee-select').addEventListener('change', selectTee)
