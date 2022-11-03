@@ -18,21 +18,18 @@
 
 <body>
     <div class="container">
-        <nav class="navbar">
-            <i class="bi bi-list"></i>
-        </nav>
         <div class="row">
             <div class="col-lg-12" id="header">
                 <div class="form-group">
                     <select class="form-select" id="course-select">
                         <option selected disabled value>Select Course</option>
                     </select>
-                    <select class="form-select" id="tee-select">
+                    <select class="form-select display-none" id="tee-select">
                         <option selected disabled value>Select Tee</option>
                     </select>
                 </div>
-                <div class="playerInfo display-none">
-                    <input class="" type="text" label="playerName" id="playerName" placeholder="Add Player Name">
+                <div class="addPlayerInfo display-none">
+                    <input type="text" label="playerName" id="playerName" placeholder="Add Player Name">
                     <button id="addPlayer">Add</button>
                 </div>
             </div>
@@ -59,21 +56,5 @@
             </div>
         </div>
     </div>
-    <template id="playerRow">
-        <tr>
-            <td class="player"></td>
-            <td class="hole"><input type="number"></td>
-            <td class="hole"><input type="number"></td>
-            <td class="hole"><input type="number"></td>
-            <td class="hole"><input type="number"></td>
-            <td class="hole"><input type="number"></td>
-            <td class="hole"><input type="number"></td>
-            <td class="hole"><input type="number"></td>
-            <td class="hole"><input type="number"></td>
-            <td class="hole"><input type="number"></td>
-            <td class="totalRowScore"></td>
-        </tr>
-    </template>
 </body>
-
 </html>

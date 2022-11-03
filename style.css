@@ -1,3 +1,37 @@
+body {
+    background-color: #83f54e;
+}
+
+select {
+    margin-top: .5rem;
+}
+
+#playerName {
+    margin-top: .5rem;
+}
+
 .display-none {
     display: none;
+}
+
+table { 
+    margin-top: 2rem;
+    background-color: #2af5e7;
+}
+
+td, tr {
+    border-color: black;
+}
+
+td input {
+    background-color: #2af5e7;
+    width: 50px;
+}
+
+.holes td, .yards td, .par td, .hcp td {
+    font-weight: bolder;
+}
+
+[data-totalType] {
+    font-weight: bold;
 }

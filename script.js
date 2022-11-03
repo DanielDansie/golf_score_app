@@ -3,23 +3,13 @@ let courseId = -1
 let teeId = -1
 const playerName = document.querySelector('#playerName')
 const addPlayer = document.querySelector('#addPlayer')
-
-
-// class Player {
-//   constructor(name, id = getNextId(), scores = []) {
-//     this.name = name;
-//     this.id = id;
-//     this.scores = scores;
-//   }
-// }
+const scorecard = document.querySelector('#scorecard')
 
 var players = [];
 
 async function getAvailableCourses() {
   const response = await fetch(url)
   let data = await response.json();
-  console.log(data)
-
   return data.courses
 }
 
@@ -36,7 +26,6 @@ async function showCourses() {
 async function getCourseInfo(id) {
   const response = await fetch(`${url}/${id}`)
   let data = await response.json();
-  console.log(data)
   return data.data
 }
 
@@ -47,9 +36,10 @@ async function selectCourse(e) {
 }
 
 async function showTees(id) {
+  var element = document.querySelector('#tee-select')
+  element.classList.remove('display-none')
   var teeBoxes = (await getCourseInfo(id)).holes[0].teeBoxes
   let teeBoxSelectHtml = document.getElementById('tee-select').innerHTML
-  console.log('I ran', teeBoxes)
   teeBoxes.forEach(function (teeBox) {
     teeBoxSelectHtml += `<option value="${teeBox.teeTypeId}">${teeBox.teeType.toUpperCase()}</option>`
   });
@@ -63,16 +53,14 @@ async function selectTee(e) {
 }
 
 async function displayTable() {
-  var element = document.querySelector('#scorecard')
-  element.classList.remove('display-none')
-  var player = document.querySelector('.playerInfo');
-  player.classList.remove('display-none')
-  let holes = (await getCourseInfo(courseId)).holes
-  // displayPlayers()
-  displayHandicap(holes)
-  displayPar(holes)
-  displayYards(holes)
-  displayHoles(holes)
+    var addPlayerInfo = document.querySelector('.addPlayerInfo');
+    scorecard.classList.remove('display-none')
+    addPlayerInfo.classList.remove('display-none')
+    let holes = (await getCourseInfo(courseId)).holes
+    displayHandicap(holes)
+    displayPar(holes)
+    displayYards(holes)
+    displayHoles(holes)
 }
 
 function createCell(title, index, row) {
@@ -85,6 +73,9 @@ function displayHoles(holes) {
 
   var row1 = table1.insertRow(0);
   var row2 = table2.insertRow(0);
+  row1.setAttribute('class', 'holes')
+  row2.setAttribute('class', 'holes')
+
   var index = 0;
   createCell('Hole', 0, row1)
   createCell('Hole', 0, row2)
@@ -107,6 +98,8 @@ function displayYards(holes) {
 
   var row1 = table1.insertRow(0);
   var row2 = table2.insertRow(0);
+  row1.setAttribute('class', 'yards')
+  row2.setAttribute('class', 'yards')
 
   let table1Total = 0;
   let table2Total = 0;
@@ -128,6 +121,7 @@ function displayYards(holes) {
     table2Total += t.yards
     index++
   })
+
   createCell(table1Total, 10, row1)
   createCell(table2Total, 10, row2)
 }
@@ -138,6 +132,8 @@ function displayPar(holes) {
 
   var row1 = table1.insertRow(0);
   var row2 = table2.insertRow(0);
+  row1.setAttribute('class', 'par')
+  row2.setAttribute('class', 'par')
 
   let table1Total = 0;
   let table2Total = 0;
@@ -169,6 +165,8 @@ function displayHandicap(holes) {
 
   var row1 = table1.insertRow(0);
   var row2 = table2.insertRow(0);
+  row1.setAttribute('class', 'hcp')
+  row2.setAttribute('class', 'hcp')
 
   var index = 0;
   createCell('Handicap', 0, row1)
@@ -193,7 +191,6 @@ addPlayer.addEventListener('click', addPlayerClick)
 
 function addPlayerClick() {
   createNewPlayer();
-  // displayPlayers()
   addPlayerRow();
 }
 
@@ -201,80 +198,98 @@ function createNewPlayer() {
   const name = document.querySelector('#playerName').value
   const id = Date.now().toString()
   const scores = new Array(18).fill(0);
+  const totalScore = scores.reduce(function (x, y) {
+    return x + y;
+  }, 0);
 
   const newPlayer = {
-    name, id, scores
+    name, id, scores, totalScore
   }
 
   players.push(newPlayer)
-  console.log(players)
 }
 
-
 function addPlayerRow() {
-  const rowTemplate = document.querySelector('#playerRow')
-
   var table1 = document.querySelector('#first');
   var table2 = document.querySelector('#second');
 
-  var playerRow1 = document.importNode(rowTemplate.content, true) 
-  var playerRow2 = document.importNode(rowTemplate.content, true)
+  var outPlayerRow = table1.insertRow(-1)
+  var inPlayerRow = table2.insertRow(-1)
 
-  table1.appendChild(playerRow1)
-  table2.appendChild(playerRow2)
-}
+  var playerInfo = players[players.length - 1]
+  var id = playerInfo.id
 
-function displayPlayers() {
-  // display players 
-  players.forEach(playerItem => {
-    renderPlayerRow(playerItem.id, true);
-    renderPlayerRow(playerItem.id, false);
+  outPlayerRow.setAttribute('data-playerid', `${id}`)
+  outPlayerRow.setAttribute('data-row', `outRow`)
+
+  inPlayerRow.setAttribute('data-playerid', `${id}`)
+  inPlayerRow.setAttribute('data-row', `inRow`)
+
+  var outNameCell = outPlayerRow.insertCell(0)
+  var inNameCell = inPlayerRow.insertCell(0)
+
+  var playerNameInfo1 = document.createTextNode(playerInfo.name)
+  var playerNameInfo2 = document.createTextNode(playerInfo.name)
+
+  outNameCell.appendChild(playerNameInfo1)
+  inNameCell.appendChild(playerNameInfo2)
+
+  var inputScores = playerInfo.scores
+
+  var outScores = inputScores.slice(0, 9)
+  var inScores = inputScores.slice(9, 18)
+
+  outScores.forEach((s, idx) => {
+    var playerScoreInput = document.createElement('input')
+    playerScoreInput.setAttribute('type', 'number')
+    playerScoreInput.value = inputScores[s]
+    var inputCells = outPlayerRow.insertCell()
+    inputCells.appendChild(playerScoreInput)
+    playerScoreInput.addEventListener('change', e => {
+      const element = parseInt(e.target.value);
+      const player = players.find(p => p.id === id)
+      player.scores[idx] = element
+      let newScore = player.scores.slice(0, 9).reduce((PV, CV) => PV + CV, 0)
+      console.log(players, player)
+      console.log(newScore)
+      outTotal = document.querySelector([`[data-totalType="outTotal${id}"]`])
+      outTotal.innerHTML = newScore
+    })
   })
+
+  inScores.forEach((s, idx) => {
+    var playerScoreInput = document.createElement('input')
+    playerScoreInput.setAttribute('type', 'number')
+    playerScoreInput.value = inputScores[s]
+    var inputCells = inPlayerRow.insertCell()
+    inputCells.appendChild(playerScoreInput)
+    playerScoreInput.addEventListener('change', e => {
+      const element = parseInt(e.target.value);
+      const player = players.find(p => p.id === id)
+      player.scores[idx + 9] = element
+      let newScore = player.scores.slice(9, 18).reduce((PV, CV) => PV + CV, 0)
+      console.log(players, player)
+      console.log(newScore)
+      inTotal = document.querySelector([`[data-totalType="inTotal${id}"]`])
+      inTotal.innerHTML = newScore
+    })
+  })
+
+  var playerOutTotal = outPlayerRow.insertCell(-1)
+  var playerInTotal = inPlayerRow.insertCell(-1)
+
+  var playerOutScoreTotal = document.createTextNode(0)
+  var playerInScoreTotal = document.createTextNode(0)
+
+  playerOutTotal.appendChild(playerOutScoreTotal)
+  playerInTotal.appendChild(playerInScoreTotal)
+
+  playerOutTotal.setAttribute('data-playerid', `${id}`)
+  playerOutTotal.setAttribute('data-totalType', `outTotal${id}`)
+
+  playerInTotal.setAttribute('data-playerid', `${id}`)
+  playerInTotal.setAttribute('data-totalType', `inTotal${id}`)
 }
-
-// function renderPlayerRow(playerId, isFirstHalf) {
-//   const newPlayerRow = getNewPlayerRowElement(playerId, isFirstHalf);
-//   const table = getTableElement(isFirstHalf);
-
-//   table.appendChild(newPlayerRow);
-// }
-
-// function getPlayerData(playerId) {
-//   return players.find(playerItem => playerItem.id === playerId);
-// }
-
-// function getPlayerName(playerId) {
-//   return getPlayerData(playerId).name;
-// }
-
-// function getScoresToDisplay(playerId, isFirstHalf) {
-//   var playerData = getPlayerData(playerId);
-//   var scores = playerData.scores;
-//   return isFirstHalf ? scores.slice(0, 9) : scores.slice(9, 19);
-// }
-
-// function getTableElement(isFirstHalf) {
-//   const tableSelector = isFirstHalf ? "#first" : "#second";
-//   return document.querySelector(tableSelector);
-// }
-
-// function getNewPlayerRowElement(playerId, isFirstHalf) {
-//   const rowTemplate = document.querySelector('#playerRow tr')
-//   const element = document.cloneNode(rowTemplate);
-//   const playerCell = element.querySelector('.player input');
-//   const scoreElements = element.querySelectorAll('.hole input');
-//   const scores = getScoresToDisplay(playerId, isFirstHalf)
-
-//   // element.setAttribute('data-playerId', playerId);
-//   // element.setAttribute('data-isFirstHalf', isFirstHalf);
-
-//   playerCell.value = getPlayerName(playerId);
-//   scoreElements.forEach((element, index) => {
-//     element.value = scores[index] || -1;
-//   });
-
-//   return element;
-// }
 
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('tee-select').addEventListener('change', selectTee)
